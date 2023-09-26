@@ -82,10 +82,12 @@ const updateAvatar = async (req, res) => {
   const filename = `${_id}_${originalname}`;
   console.log("tempUpload", tempUpload);
   const resultUpload = path.join(avatarsDir, filename);
-  await tempUpload.resize(jimp.AUTO, 250);
-  // await tempUpload.resize(250, Jimp.AUTO);
+  const image = await jimp.read(tempUpload);
+  // Resize the image to width 250 and auto height.
+  await image.resize(250, 250);
+  // Save and overwrite the image
+  await image.writeAsync(tempUpload);
   await fs.rename(tempUpload, resultUpload);
-  await resultUpload.resize(jimp.AUTO, 250);
   const avatarURL = path.join("avatars", filename);
   await User.findByIdAndUpdate(_id, { avatarURL });
 
