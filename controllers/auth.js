@@ -80,7 +80,6 @@ const updateAvatar = async (req, res) => {
   const { _id } = req.user;
   const { path: tempUpload, originalname } = req.file;
   const filename = `${_id}_${originalname}`;
-  console.log("tempUpload", tempUpload);
   const resultUpload = path.join(avatarsDir, filename);
   const image = await jimp.read(tempUpload);
   // Resize the image to width 250 and auto height.
