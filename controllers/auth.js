@@ -25,7 +25,6 @@ const register = async (req, res) => {
   const hashPassword = await bcrypt.hash(password, 10);
   const avatarURL = gravatar.url(email);
   const verificationToken = nanoid();
-  console.log("verificationToken", verificationToken);
 
   const newUser = await User.create({
     ...req.body,
@@ -51,7 +50,7 @@ const verifyEmail = async (req, res) => {
   const { verificationToken } = req.params;
   const user = await User.findOne({ verificationToken });
   if (!user) {
-    throw HttpError(401, "Email not found");
+    throw HttpError(401, "User not found");
   }
   await User.findByIdAndUpdate(user._id, {
     verify: true,
@@ -59,7 +58,7 @@ const verifyEmail = async (req, res) => {
   });
 
   res.json({
-    message: "Email verify success",
+    message: "Verification successful",
   });
 };
 
@@ -70,7 +69,7 @@ const resendVerifyEmail = async (req, res) => {
     throw HttpError(401, "Email not found");
   }
   if (user.verify) {
-    throw HttpError(401, "Email already verify");
+    throw HttpError(401, "Verification has already been passed");
   }
 
   const verifyEmail = {
@@ -81,8 +80,8 @@ const resendVerifyEmail = async (req, res) => {
 
   await sendEmail(verifyEmail);
 
-  res.json({
-    message: "Verify email send success",
+  res.status(200).json({
+    message: "Verification email sent",
   });
 };
 
@@ -102,7 +101,6 @@ const login = async (req, res) => {
   };
 
   const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" });
-  console.log("SECRET_KEY", SECRET_KEY);
   await User.findByIdAndUpdate(user._id, { token });
 
   res.json({

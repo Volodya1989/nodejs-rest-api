@@ -56,7 +56,10 @@ const registerSchema = Joi.object({
 });
 
 const emailSchema = Joi.object({
-  email: Joi.string().pattern(emailRegexp).required(),
+  email: Joi.string().pattern(emailRegexp).empty().required().messages({
+    "string.empty": `EMAIL cannot be an empty field`,
+    "any.required": `missing required field EMAIL`,
+  }),
 });
 
 const loginSchema = Joi.object({
